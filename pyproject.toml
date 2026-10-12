@@ -1,0 +1,56 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "cfast-bin"
+dynamic = ["version"]
+description = "Unofficial repackaging of the NIST CFAST fire model binaries"
+readme = "README.md"
+requires-python = ">=3.9"
+# GPL-3.0-or-later WITH GCC-exception-3.1 covers the GCC runtime shipped in macOS wheels only
+license = "MIT AND NIST-Software AND GPL-3.0-or-later WITH GCC-exception-3.1"
+license-files = ["LICENSE", "src/cfast_bin/LICENSES/*"]
+authors = [
+    { name = "WYGAS Benoît", email = "97663334+bewygs@users.noreply.github.com" }
+]
+keywords = ["cfast", "fire", "nist", "zone model"]
+classifiers = [
+    "Environment :: Console",
+    "Intended Audience :: Science/Research",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Fortran",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+dependencies = ['intel-cmplr-lib-rt>=2026.1; sys_platform == "linux"']
+
+[project.scripts]
+cfast = "cfast_bin:main"
+
+[project.urls]
+Source = "https://github.com/bewygs/cfast-bin"
+CFAST = "https://github.com/firemodels/cfast"
+
+[tool.hatch.version]
+path = "src/cfast_bin/_version.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/cfast_bin"]
+artifacts = [
+    "src/cfast_bin/_version.py",
+    "src/cfast_bin/bin/*",
+    "src/cfast_bin/lib/*",
+]
+
+[tool.hatch.build.targets.wheel.hooks.custom]
+
+[tool.ruff]
+line-length = 88
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "B", "C4", "UP"]
+ignore = ["E501"]

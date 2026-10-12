@@ -1,0 +1,11 @@
+# Written by scripts/prepare.py
+/.wheel-tag
+/build/
+/src/cfast_bin/_version.py
+/src/cfast_bin/bin/
+/src/cfast_bin/lib/
+/src/cfast_bin/LICENSES/
+
+/dist/
+__pycache__/
+.venv/
