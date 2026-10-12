@@ -2,7 +2,7 @@
 
 The [CFAST](https://github.com/firemodels/cfast) fire model, as a Python wheel.
 
-`cfast-bin` is an **unofficial** repackaging of the binaries built and published by NIST. Nothing is recompiled: each wheel contains the `cfast` executable taken from the NIST bundle for its platform.
+`cfast-bin` is an **unofficial** repackaging of the NIST CFAST binaries. Each wheel ships the `cfast` executable that NIST built for that platform.
 
 ## Usage
 
@@ -29,16 +29,16 @@ print(cfast_bin.CFAST_BUILD)  # NIST build string, e.g. 8-Beta-343-gd3b43914c
 | macOS arm64 | Release versions only |
 | Windows x64 | — |
 
-Requirements come from the NIST binaries and may change between CFAST versions. Nightly versions have no macOS wheel: the NIST nightly binary requires macOS 28, which is not released yet.
+Requirements come from the NIST binaries and may change between CFAST versions. Nightly versions have no macOS wheel because the NIST nightly binary requires macOS 28, which is not released yet.
 
 ## Versioning
 
-The version follows CFAST: `8.0.0` contains the binaries of the CFAST 8.0.0 release, and `8.0.0.post1` a packaging-only fix of it. Nightly builds are versioned `8.0.0.dev<N>`, where `N` is the NIST Beta number.
+Versions follow CFAST, so `8.0.0` contains the binaries of the CFAST 8.0.0 release and `8.0.0.post1` is a packaging-only fix of it. Nightly builds are versioned `8.0.0.dev<N>`, where `N` is the NIST Beta number.
 
 ## Licenses
 
-- CFAST is NIST software, distributed under the [NIST notice](https://github.com/firemodels/cfast/blob/master/LICENSE.md). On Linux, the binary's RPATH is modified so that it finds the Intel runtime; the wheel's `NOTICE` records this change.
-- The Intel runtime on Linux is not included: it is installed from [`intel-cmplr-lib-rt`](https://pypi.org/project/intel-cmplr-lib-rt/).
+- CFAST is NIST software, distributed under the [NIST notice](https://github.com/firemodels/cfast/blob/master/LICENSE.md). On Linux, the binary's RPATH is modified so that it finds the Intel runtime, and the wheel's `NOTICE` records this change.
+- The Intel runtime on Linux is not bundled. It comes from the [`intel-cmplr-lib-rt`](https://pypi.org/project/intel-cmplr-lib-rt/) dependency.
 - macOS wheels include the GCC runtime libraries (`libgfortran`, `libquadmath`, `libgcc_s`), under the GPLv3 with the GCC Runtime Library Exception.
 - The code of this repository is under the MIT license.
 
