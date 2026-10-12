@@ -1,0 +1,52 @@
+name: Publish
+
+# The release tag is the package version (8.0.0, 8.0.0.post1, ...): the wheels are
+# rebuilt from the assets of the CFAST-8.0.0 NIST release, tested, then uploaded.
+# Before a release, check that the NIST assets still end in -linux.tar.gz,
+# -macos.dmg and -windows.exe. Run manually without a version, it publishes the
+# newest nightly bundle as 8.0.0.dev<N>.
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Package version (8.0.0, 8.0.0.post1, ...); empty for the newest nightly bundle"
+        type: string
+        default: ""
+      nist-tag:
+        description: "NIST release tag, when it is not CFAST-<version without .postN>"
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+    with:
+      version: ${{ github.event.release.tag_name || inputs.version }}
+      nist-tag: ${{ inputs.nist-tag }}
+
+  pypi-publish:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    environment:
+      name: pypi
+      url: https://pypi.org/project/cfast-bin/
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: wheel-*
+          merge-multiple: true
+          path: dist/
+      # The nightly macOS wheels need a macOS newer than the runners, so they are untested
+      - name: Drop the untested macOS wheel
+        if: ${{ !(github.event.release.tag_name || inputs.version) }}
+        run: rm -f dist/*macosx*.whl
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/

@@ -1,0 +1,114 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+    paths-ignore: ["*.md", "LICENSE", ".github/dependabot.yml"]
+  pull_request:
+    branches: [main]
+    paths-ignore: ["*.md", "LICENSE", ".github/dependabot.yml"]
+  workflow_dispatch:
+  # Weekly, to follow the CFAST 8 nightly bundles
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_call:
+    inputs:
+      version:
+        description: "Package version to build from the CFAST-<version> NIST release (nightly bundle if empty)"
+        type: string
+        default: ""
+      nist-tag:
+        description: "NIST release tag, when it is not CFAST-<version without .postN>"
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.3.0
+      - run: uvx pre-commit run --all-files
+
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-latest, platform: linux }
+          - { os: macos-latest, platform: macos }
+          - { os: windows-latest, platform: windows }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.3.0
+
+      - name: Prepare the CFAST binary
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ inputs.version }}
+          NIST_TAG: ${{ inputs.nist-tag }}
+        run: |
+          args=(--platform ${{ matrix.platform }})
+          if [ -n "$VERSION" ]; then
+            args+=(--repo firemodels/cfast --tag "${NIST_TAG:-CFAST-${VERSION%%.post*}}" --version "$VERSION")
+          fi
+          uv run scripts/prepare.py "${args[@]}"
+
+      - run: uv build --wheel
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: wheel-${{ matrix.os }}
+          path: dist/*.whl
+      - uses: actions/upload-artifact@v7
+        with:
+          name: examples-${{ matrix.os }}
+          path: build/examples/
+
+  test:
+    needs: build
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        installer: [pip, uv]
+    runs-on: ${{ matrix.os }}
+    # The nightly cfast8_macos requires macOS 28 (macosx_28_0_arm64), newer than the runner
+    continue-on-error: ${{ matrix.os == 'macos-latest' && inputs.version == '' }}
+    env:
+      BIN: ${{ matrix.os == 'windows-latest' && 'venv/Scripts' || 'venv/bin' }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
+        with:
+          name: wheel-${{ matrix.os }}
+          path: dist/
+      - uses: actions/download-artifact@v8
+        with:
+          name: examples-${{ matrix.os }}
+          path: build/examples/
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.x"
+      - uses: astral-sh/setup-uv@v10.3.0
+
+      - name: Install with pip
+        if: matrix.installer == 'pip'
+        run: python -m venv venv && "$BIN/python" -m pip install dist/*.whl pytest
+      - name: Install with uv
+        if: matrix.installer == 'uv'
+        run: uv venv venv && uv pip install --python venv dist/*.whl pytest
+
+      - run: '"$BIN/python" -m pytest tests'
