@@ -3,7 +3,10 @@ name: Build
 on:
   push:
     branches: [main]
+    paths-ignore: ["*.md", "LICENSE", ".github/dependabot.yml"]
   pull_request:
+    branches: [main]
+    paths-ignore: ["*.md", "LICENSE", ".github/dependabot.yml"]
   workflow_dispatch:
   # Weekly, to follow the CFAST 8 nightly bundles
   schedule:
@@ -21,6 +24,10 @@ on:
 
 permissions:
   contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
 
 defaults:
   run:
