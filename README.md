@@ -1,5 +1,8 @@
 # cfast-bin
 
+[![PyPI](https://img.shields.io/pypi/v/cfast-bin)](https://pypi.org/project/cfast-bin/)
+[![Build](https://github.com/bewygs/cfast-bin/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/bewygs/cfast-bin/actions/workflows/build.yml)
+
 The [CFAST](https://github.com/firemodels/cfast) fire model, as a Python wheel.
 
 `cfast-bin` is an **unofficial** repackaging of the NIST CFAST binaries. Each wheel ships the `cfast` executable that NIST built for that platform.
