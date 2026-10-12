@@ -29,7 +29,7 @@ print(cfast_bin.CFAST_BUILD)  # NIST build string, e.g. 8-Beta-343-gd3b43914c
 | macOS arm64 | Release versions only |
 | Windows x64 | — |
 
-Requirements come from the NIST binaries and may change between CFAST versions. Nightly versions have no macOS wheel because the NIST nightly binary requires macOS 28, which is not released yet.
+Requirements come from the NIST binaries and may change between CFAST versions.
 
 ## Versioning
 
