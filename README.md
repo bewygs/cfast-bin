@@ -29,14 +29,14 @@ print(cfast_bin.CFAST_BUILD)  # NIST build string, e.g. 8-Beta-343-gd3b43914c
 | Platform | Requirement |
 | --- | --- |
 | Linux x86_64 | glibc ≥ 2.34 |
-| macOS arm64 | Release versions only |
+| macOS arm64 | macOS ≥ 26 |
 | Windows x64 | — |
 
 Requirements come from the NIST binaries and may change between CFAST versions.
 
 ## Versioning
 
-Versions follow CFAST, so `8.0.0` contains the binaries of the CFAST 8.0.0 release and `8.0.0.post1` is a packaging-only fix of it. Nightly builds are versioned `8.0.0.dev<N>`, where `N` is the NIST Beta number.
+Versions follow CFAST, so `8.0.0` contains the binaries of the CFAST 8.0.0 release and `8.0.0.post1` is a packaging-only fix of it. Nightly builds are versioned `8.0.0.dev<N>`, where `N` counts the CFAST commits since its `CFAST-8-Beta` tag.
 
 ## Licenses
 

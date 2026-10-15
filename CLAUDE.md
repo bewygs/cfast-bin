@@ -31,9 +31,8 @@ The wheel tag is read from the binary, never hardcoded: Linux takes the highest 
 
 ## Versions and releases
 
-- Nightlies come from the `CFAST_TEST` release of `firemodels/test_bundles`: asset `CFAST-<major>-Beta-<N>-g<sha>-<suffix>` becomes version `<major>.0.0.dev<N>`. CI rebuilds them weekly.
+- Nightlies come from the `CFAST_TEST` release of `firemodels/test_bundles`: asset `CFAST-<major>-Beta-<N>-g<sha>-<suffix>` becomes version `<major>.0.0.dev<N>`. The build string is `git describe` output, so `N` counts commits since the `CFAST-<major>-Beta` tag; a new NIST tag would change the format and make `prepare.py` stop with "Cannot derive a version". CI rebuilds them weekly.
 - Releases: the GitHub release tag is the package version (`8.0.0`, `8.0.0.post1`). `publish.yml` calls the reusable `build.yml`, which runs `prepare.py --repo firemodels/cfast --tag CFAST-<version without .postN> --version <version>` (the `nist-tag` input overrides the tag).
-- Nightly macOS binaries require a macOS newer than the GitHub runners: CI lets those tests fail, and `publish.yml` drops the macOS wheel from nightly uploads.
 
 ## Tests
 
