@@ -85,8 +85,6 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
         installer: [pip, uv]
     runs-on: ${{ matrix.os }}
-    # The nightly cfast8_macos requires macOS 28 (macosx_28_0_arm64), newer than the runner
-    continue-on-error: ${{ matrix.os == 'macos-latest' && inputs.version == '' }}
     env:
       BIN: ${{ matrix.os == 'windows-latest' && 'venv/Scripts' || 'venv/bin' }}
     steps:

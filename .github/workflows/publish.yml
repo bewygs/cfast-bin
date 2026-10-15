@@ -43,10 +43,6 @@ jobs:
           pattern: wheel-*
           merge-multiple: true
           path: dist/
-      # The nightly macOS wheels need a macOS newer than the runners, so they are untested
-      - name: Drop the untested macOS wheel
-        if: ${{ !(github.event.release.tag_name || inputs.version) }}
-        run: rm -f dist/*macosx*.whl
       - uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: dist/
